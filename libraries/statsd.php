@@ -32,13 +32,25 @@ class StatsD {
     public function counting($key, $amount = 1, $rate = 1) {
         $this->send("$key:$amount|c", $rate);
     }
+    
+    // Record a gauge value
+    public function gauge($key, $amount) {
+        $this->send("$key:$amount|g");
+    }
 
     // Send
-    private function send($value, $rate) {
+    private function send($value, $rate = NULL ) {
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr);
+        
+        if (is_null ($rate) {
+            $outval = $value;
+        } else {
+            $outval = $value."|@$rate";
+        }
+        
         // Will show warning if not opened, and return false
         if ($fp) {
-            fwrite($fp, "$value|@$rate");
+            fwrite($fp, $outval);
             fclose($fp);
         }
     }
