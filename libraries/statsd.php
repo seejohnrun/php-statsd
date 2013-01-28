@@ -32,6 +32,11 @@ class StatsD {
     public function counting($key, $amount = 1, $rate = 1) {
         $this->send("$key:$amount|c", $rate);
     }
+    
+    // Record a gauge value
+    public function gauge($key, $amount) {
+        $this->send("$key:$amount|g");
+    }
 
     // Send
     private function send($value, $rate) {
