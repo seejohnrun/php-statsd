@@ -41,9 +41,16 @@ class StatsD {
     // Send
     private function send($value, $rate = NULL ) {
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr);
+        
+        if (is_null ($rate) {
+            $outval = $value;
+        } else {
+            $outval = $value."|@$rate";
+        }
+        
         // Will show warning if not opened, and return false
         if ($fp) {
-            fwrite($fp, "$value". $rate ? "|@$rate" : "");
+            fwrite($fp, $outval);
             fclose($fp);
         }
     }
