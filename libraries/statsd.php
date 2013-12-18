@@ -21,7 +21,7 @@ class StatsD {
 
     // Record gauge
     public function gauge($key, $gauge) {
-        $this->send_value("$key:$gauge|g");
+        $this->send("$key:$gauge|g");
     }
 
     // Time something
@@ -39,23 +39,13 @@ class StatsD {
     }
 
     // Send
-    private function send($value, $rate) {
+    private function send($value, $rate = NULL) {
         $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr);
         // Will show warning if not opened, and return false
         if ($fp) {
-            fwrite($fp, "$value|@$rate");
+            fwrite($fp, $rate ? "$value|@$rate" : $value);
             fclose($fp);
         }
-    }
-        
-    private function send_value($value) {
-        $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr);
-        // Will show warning if not opened, and return false
-        if ($fp) {
-            fwrite($fp, "$value");
-            fclose($fp);
-        }
-       
     }
 
 }
