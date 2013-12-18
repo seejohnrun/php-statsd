@@ -19,6 +19,11 @@ class StatsD {
         $this->send("$key:$time|ms", $rate);
     }
 
+    // Record gauge
+    public function gauge($key, $gauge) {
+        $this->send_value("$key:$gauge|g");
+    }
+
     // Time something
     public function time_this($key, $callback, $rate = 1) {
         $begin = microtime(true);
@@ -41,6 +46,16 @@ class StatsD {
             fwrite($fp, "$value|@$rate");
             fclose($fp);
         }
+    }
+        
+    private function send_value($value) {
+        $fp = fsockopen('udp://' . $this->host, $this->port, $errno, $errstr);
+        // Will show warning if not opened, and return false
+        if ($fp) {
+            fwrite($fp, "$value");
+            fclose($fp);
+        }
+       
     }
 
 }
